@@ -26,6 +26,7 @@ namespace QuanLyTiecCuoi
             InitializeComponent();
             CalculateTotal();
             conString = _conString;
+
         }
         //private string conString = @"Data Source=DESKTOP-M4GHD5G\LUCY;Initial Catalog=QUANLYTIECCUOI;Persist Security Info=True;User ID=sa;Password=140403";
 
@@ -126,15 +127,15 @@ namespace QuanLyTiecCuoi
         }
         private void Phone_TextChanged(object sender, EventArgs e)
         {
-            string phoneValue = Phone.Text.Trim();
+            string phoneValue = Phone1.Text.Trim();
             string FindPhone = "SELECT DIENTHOAI FROM KHACHHANGINFOR WHERE DIENTHOAI LIKE '%' + @searchText + '%'";
-            if (Phone.TextLength > 1)
+            if (Phone1.TextLength > 1)
             {
                 //    CustomerName.Text = Phone.TextLength.ToString();
                 if (!Int64.TryParse(phoneValue, out _))
                 {
                     MessageBox.Show("Invalid Phone number", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Phone.Text = "";
+                    Phone1.Text = "";
                 }
 
 
@@ -162,7 +163,7 @@ namespace QuanLyTiecCuoi
                     }
                 }
             }
-            else if (Phone.TextLength <= 0)
+            else if (Phone1.TextLength <= 0)
             {
                 SearchResult.Height = 0;
             }
@@ -196,10 +197,10 @@ namespace QuanLyTiecCuoi
                     SqlDataReader reader = cmd.ExecuteReader();
                     if (reader.Read())
                     {
-                        Phone.Text = reader["DIENTHOAI"].ToString();
-                        CustomerName.Text = reader["TENKHACHHANG"].ToString();
-                        Address.Text = reader["DIACHI"].ToString();
-                        Email.Text = reader["email"].ToString();
+                        Phone1.Text = reader["DIENTHOAI"].ToString();
+                        CustomerName1.Text = reader["TENKHACHHANG"].ToString();
+                        Address1.Text = reader["DIACHI"].ToString();
+                        Email1.Text = reader["email"].ToString();
                         SearchResult.Height = 0;
 
 
@@ -215,20 +216,17 @@ namespace QuanLyTiecCuoi
 
         }
 
-
-
-        private void ChooseMenu_Click(object sender, EventArgs e)
+        private void ChonThucDon_Click(object sender, EventArgs e)
         {
-            Food foodForm = new Food(conString,this);
+            Food foodForm = new Food(conString, this);
             foodForm.ConfirmEvent += FoodForm_ConfirmEvent;
             if (ListSelectedFood != null)
             {
                 foodForm.SelectedFoods = ListSelectedFood;
                 foodForm._conString = conString;
-               
+
             }
             foodForm.isChoosing = true;
-
             foodForm.Show();
         }
 
@@ -290,7 +288,7 @@ namespace QuanLyTiecCuoi
 
 
 
-        private void VenueForm_ConfirmEvent(int VenueSelectedId)
+        public void VenueForm_ConfirmEvent(int VenueSelectedId)
         {
             string query = "SELECT ID, TENSANH, TIENSANH, MaxTable, MINMONEY FROM SANHINFOR WHERE ID = @VenueId";
 
@@ -315,12 +313,11 @@ namespace QuanLyTiecCuoi
                     {
                         DataRow row = dataTable.Rows[0];
 
-                        Venue.Text = row["TENSANH"].ToString();
                         VenueFee.Text = row["TIENSANH"].ToString();
                         MaxTableOfVenue = (int)row["MaxTable"];
-                        MaxTable.Text = row["MaxTable"].ToString();
+                        MaxTable1.Text = row["MaxTable"].ToString();
                         MinMoneyTableOfVenue = (decimal)row["MINMONEY"];
-                        MinMoneyValue.Text = row["MINMONEY"].ToString();
+                        MinMoneyValue1.Text = row["MINMONEY"].ToString();
 
                     }
                     else
@@ -341,8 +338,24 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-
+        private void ChonSanh_Click_1(object sender, EventArgs e)
+        {
+            if (ShiftParty.Text != "Chọn Ca")
+            {
+                Venue VenueForm = new Venue(this);
+                VenueForm.VenueSelectedId = this.VenueSelectedId;
+                VenueForm.AvailableVenueDate = Date.Value.Date;
+                VenueForm.conString = conString;
+                VenueForm.AvailableVenueShift = ShiftParty.Text;
+                VenueForm.isChoosing = true;
+                VenueForm.Show();
+                VenueForm.FromBookingSate = true;
+            }
+            else
+            {
+                MessageBox.Show("Vui Lòng Chọn Ca!");
+            }
+        }
 
 
         private void Venue_Click(object sender, EventArgs e)
@@ -350,7 +363,6 @@ namespace QuanLyTiecCuoi
             if (ShiftParty.Text != "Chọn Ca")
             {
                 Venue VenueForm = new Venue(this);
-                VenueForm.ConfirmEvent += VenueForm_ConfirmEvent;
                 VenueForm.VenueSelectedId = this.VenueSelectedId;
                 VenueForm.AvailableVenueDate = Date.Value.Date;
                 VenueForm.conString = conString
@@ -358,6 +370,8 @@ namespace QuanLyTiecCuoi
                 VenueForm.AvailableVenueShift = ShiftParty.Text;
                 VenueForm.isChoosing = true;
                 VenueForm.Show();
+                VenueForm.FromBookingSate = true;
+
             }
             else
             {
@@ -374,7 +388,6 @@ namespace QuanLyTiecCuoi
             ListSelectedService = ListService;
             decimal totalServicePrice = 0.0m;
             string query = "SELECT ID, TENDICHVU, GIADICHVU, LOAIDICHVU FROM DICHVU WHERE ID IN (" + string.Join(",", ListSelectedService) + ")";
-
             using (SqlConnection connection = new SqlConnection(conString))
             {
                 SqlDataAdapter adapter = new SqlDataAdapter();
@@ -384,7 +397,7 @@ namespace QuanLyTiecCuoi
 
                 ServiceId.DataPropertyName = "ID";
                 ServiceType.DataPropertyName = "LOAIDICHVU";
-                ServiceName.DataPropertyName = "TENMONAN";
+                ServiceName.DataPropertyName = "TENDICHVU";
                 ServicePrice.DataPropertyName = "GIADICHVU";
 
                 DataTable dataTable = new DataTable();
@@ -405,17 +418,15 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-        private void ChooseService_Click(object sender, EventArgs e)
+        private void ChonDichVu_Click(object sender, EventArgs e)
         {
-
-            QuanLyTiecCuoi.Service.Service serviceForm = new QuanLyTiecCuoi.Service.Service(this,conString);
+            QuanLyTiecCuoi.Service.myService serviceForm = new QuanLyTiecCuoi.Service.myService(conString, this);
             serviceForm.ConfirmEvent += ServiceForm_ConfirmEvent;
-            if (ListSelectedFood != null)
+            serviceForm.isBookingForm = true;
+            if (ListSelectedService != null)
             {
                 serviceForm.SelectedService = ListSelectedService;
             }
-            serviceForm.conString = conString;
             serviceForm.Show();
         }
 
@@ -426,9 +437,9 @@ namespace QuanLyTiecCuoi
             int numberOfTables;
             int reservedTables;
 
-            if (!int.TryParse(NumberOfTable.Text, out numberOfTables) || NumberOfTable.Text.Length == 0)
+            if (!int.TryParse(NumberOfTable1.Text, out numberOfTables) || NumberOfTable1.Text.Length == 0)
             {
-                NumberOfTable.Text = "0";
+                NumberOfTable1.Text = "0";
                 numberOfTables = 0;
 
             }
@@ -436,12 +447,12 @@ namespace QuanLyTiecCuoi
             {
                 MessageBox.Show("The venue can only accommodate " + MaxTableOfVenue.ToString() + " tables.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 numberOfTables = 0;
-                NumberOfTable.Text = "0";
+                NumberOfTable1.Text = "0";
             }
 
-            if (!int.TryParse(ReservedTable.Text, out reservedTables) || ReservedTable.Text.Length == 0)
+            if (!int.TryParse(ReservedTable1.Text, out reservedTables) || ReservedTable1.Text.Length == 0)
             {
-                ReservedTable.Text = "0";
+                ReservedTable1.Text = "0";
                 reservedTables = 0;
             }
 
@@ -450,7 +461,7 @@ namespace QuanLyTiecCuoi
             {
                 MessageBox.Show("The venue can only accommodate " + MaxTableOfVenue.ToString() + " tables.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 reservedTables = 0;
-                ReservedTable.Text = "0";
+                ReservedTable1.Text = "0";
             }
 
             if (numberOfTables + reservedTables > MaxTableOfVenue && MaxTableOfVenue != 0)
@@ -571,29 +582,26 @@ namespace QuanLyTiecCuoi
             CalculateTotal();
         }
 
-      
-        private void Confirm_Click(object sender, EventArgs e)
+        private void XacNhan_Click(object sender, EventArgs e)
         {
-
-
             if (!CheckMenuPrice())
             {
                 MessageBox.Show("Please choose more menu items.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                string customer = CustomerName.Text;
+                string customer = CustomerName1.Text;
                 DateTime createDate = DateTime.Now; // You may need to adjust how you get the current date
-                string address = Address.Text;
-                string phoneNumber = Phone.Text;
-                string email = Email.Text;
-                string groomName = GroomName.Text;
-                string bride = BrideName.Text;
+                string address = Address1.Text;
+                string phoneNumber = Phone1.Text;
+                string email = Email1.Text;
+                string groomName = GroomName1.Text;
+                string bride = BrideName1.Text;
 
                 string shift = ShiftParty.Text;
                 DateTime dueDate = Date.Value.Date;
-                int numberOfTable = int.TryParse(NumberOfTable.Text, out int result) ? result : 0;
-                int reserveTable = int.TryParse(ReservedTable.Text, out int result1) ? result1 : 0;
+                int numberOfTable = int.TryParse(NumberOfTable1.Text, out int result) ? result : 0;
+                int reserveTable = int.TryParse(ReservedTable1.Text, out int result1) ? result1 : 0;
 
                 string listIdFood = string.Empty;
                 string listIdService = string.Empty;
@@ -603,7 +611,7 @@ namespace QuanLyTiecCuoi
                 {
                     if (!row.IsNewRow)
                     {
-                    
+
                         string foodId = row.Cells[0].Value.ToString();
                         listIdFood += foodId + ",";
 
@@ -657,7 +665,7 @@ namespace QuanLyTiecCuoi
                             command.Parameters.AddWithValue("@Deposit", DepositeValue);
                             command.Parameters.AddWithValue("@ListIdFood", listIdFood);
                             command.Parameters.AddWithValue("@ListIdService", listIdService);
-                            
+
                             try
                             {
                                 connection.Open();
@@ -718,6 +726,12 @@ namespace QuanLyTiecCuoi
         {
 
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
     }
     }
 

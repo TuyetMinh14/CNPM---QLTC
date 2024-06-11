@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Npgsql;
 
 namespace QuanLyTiecCuoi.SERVICE
 {
@@ -17,15 +16,13 @@ namespace QuanLyTiecCuoi.SERVICE
     {
         private Food _parentForm;
         public string conString;
-
+        private Size formSize;
         public InsertFood(Food parentForm , String _conString)
         {
             InitializeComponent();
             _parentForm = parentForm;
-          
             conString = _conString;
-            
-           
+            pictureBox1.Paint += new PaintEventHandler(pictureBox1_Paint);
         }
         public string imglocation = "";
         //private string conString = @"Data Source=DESKTOP-M4GHD5G\LUCY;Initial Catalog=QUANLYTIECCUOI;Persist Security Info=True;User ID=sa;Password=140403";
@@ -35,7 +32,28 @@ namespace QuanLyTiecCuoi.SERVICE
 
         }
 
-        private void UploadPhoto_Click(object sender, EventArgs e)
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCCALCSIZE = 0x0083;
+            const int WM_SYSCOMMAND = 0x0112;
+            const int SC_MINIMIZE = 0xF020;
+            const int SC_RESTORE = 0xF120;
+            if (m.Msg == WM_NCCALCSIZE && m.WParam.ToInt32() == 1)
+            {
+                return;
+            }
+            if (m.Msg == WM_SYSCOMMAND)
+            {
+                int wParam = (m.WParam.ToInt32() & 0xFFF0);
+                if (wParam == SC_MINIMIZE)  //Before
+                    formSize = this.ClientSize;
+                if (wParam == SC_RESTORE)// Restored form(Before)
+                    this.Size = formSize;
+            }
+            base.WndProc(ref m);
+        }
+
+        private void UploadAnh_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "png files(*.png)|*.png|jpg files(*.jpg)|*.jpg";
@@ -46,37 +64,29 @@ namespace QuanLyTiecCuoi.SERVICE
             }
         }
 
-        private void Confirm_Click(object sender, EventArgs e)
+        private void XacNhan_Click(object sender, EventArgs e)
         {
-            string FoodName = FoodNameAdd.Text;
+            string FoodName = textBoxTenMonAn.Texts.Trim();
             float FoodPrice;
-            string note = NoteAdd.Text;
+            string note = textBoxGhiChu.Texts.Trim();
 
-            // Validate and parse MaxTable
-          
-            if (!float.TryParse(FoodPriceAdd.Text, out FoodPrice))
+
+            if (!float.TryParse(textBoxDonGia.Texts.Trim(), out FoodPrice))
             {
                 MessageBox.Show("Please enter a valid floating-point value for the price of the Venue.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return; // Exit the method if input is invalid
+                return;
             }
 
-            // SQL query to insert a new venue
-            string insert_query = "INSERT INTO food (TENMONAN, DONGIA, NOTE, PICTURE) VALUES (@FoodName, @FoodPrice, @Note, @Image)";
+            string insert_query = "INSERT INTO FOOD (TENMONAN, DONGIA, PICTURE, NOTE) VALUES (@FoodName, @FoodPrice, @Image, @Note)";
 
-            // Create a new connection
             using (SqlConnection connection = new SqlConnection(conString))
             {
-                // Create a new command with the insert query and connection
                 using (SqlCommand cmd = new SqlCommand(insert_query, connection))
                 {
-                    // Add parameters to the command
                     cmd.Parameters.AddWithValue("@FoodName", FoodName);
                     cmd.Parameters.AddWithValue("@FoodPrice", FoodPrice);
-                    cmd.Parameters.AddWithValue("@Note", note);
-
                     try
                     {
-                        // Check if an image is provided
                         if (!string.IsNullOrEmpty(imglocation))
                         {
                             byte[] imageData = File.ReadAllBytes(imglocation);
@@ -84,28 +94,22 @@ namespace QuanLyTiecCuoi.SERVICE
                         }
                         else
                         {
-                            // Inform the user to submit an image
                             MessageBox.Show("Please upload an image.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return; // Exit the method
+                            return;
                         }
-
+                        cmd.Parameters.AddWithValue("@Note", note);
                         try
                         {
-                            // Open connection
                             connection.Open();
 
-                            // Execute the command to insert the new venue
                             cmd.ExecuteNonQuery();
 
-                            // Show success message
                             MessageBox.Show("Venue added successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            // Reload data into DataGridView
 
                         }
                         catch (Exception ex)
                         {
-                            // Show error message if an error occurs during insertion
                             MessageBox.Show("An error occurred while adding the venue: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -114,7 +118,6 @@ namespace QuanLyTiecCuoi.SERVICE
                         MessageBox.Show("You haven't submitted a picture yet", "Error", MessageBoxButtons.OK);
                     }
 
-                    // Add image data as parameter
                 }
             }
 
@@ -123,6 +126,28 @@ namespace QuanLyTiecCuoi.SERVICE
 
             // Đóng form insert
             this.Close();
+        }
+
+        private void rjButton3_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            PictureBox pb = sender as PictureBox;
+            if (pb.Image == null)
+            {
+                // Draw a border
+                int borderWidth = 2;
+                Color borderColor = Color.FromArgb(255, 12, 74);
+
+            
+                ControlPaint.DrawBorder(e.Graphics, pb.ClientRectangle, borderColor, borderWidth, ButtonBorderStyle.Solid,
+                    borderColor, borderWidth, ButtonBorderStyle.Solid,
+                    borderColor, borderWidth, ButtonBorderStyle.Solid,
+                    borderColor, borderWidth, ButtonBorderStyle.Solid);
+            }
         }
     }
 }

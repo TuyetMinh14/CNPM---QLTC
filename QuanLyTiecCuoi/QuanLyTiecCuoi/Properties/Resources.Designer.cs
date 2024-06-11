@@ -63,6 +63,116 @@ namespace QuanLyTiecCuoi.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _34294_200 {
+            get {
+                object obj = ResourceManager.GetObject("34294-200", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5087607 {
+            get {
+                object obj = ResourceManager.GetObject("5087607", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _5582931 {
+            get {
+                object obj = ResourceManager.GetObject("5582931", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _703213 {
+            get {
+                object obj = ResourceManager.GetObject("703213", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap _74ab48240e34df5e05a398e997a42b0e {
+            get {
+                object obj = ResourceManager.GetObject("74ab48240e34df5e05a398e997a42b0e", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calendar_pen {
+            get {
+                object obj = ResourceManager.GetObject("calendar-pen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calendar_pen__2_ {
+            get {
+                object obj = ResourceManager.GetObject("calendar-pen (2)", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap calendar_pen1 {
+            get {
+                object obj = ResourceManager.GetObject("calendar-pen1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap chat {
+            get {
+                object obj = ResourceManager.GetObject("chat", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap error {
+            get {
+                object obj = ResourceManager.GetObject("error", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap fa6_regular__pen_to_square {
+            get {
+                object obj = ResourceManager.GetObject("fa6-regular--pen-to-square", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Food_icon {
             get {
                 object obj = ResourceManager.GetObject("Food-icon", resourceCulture);
@@ -76,6 +186,16 @@ namespace QuanLyTiecCuoi.Properties {
         internal static System.Drawing.Bitmap Party {
             get {
                 object obj = ResourceManager.GetObject("Party", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap png_transparent_computer_icons_user_login_desktop_others_blue_computer_prints {
+            get {
+                object obj = ResourceManager.GetObject("png-transparent-computer-icons-user-login-desktop-others-blue-computer-prints", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -126,6 +246,16 @@ namespace QuanLyTiecCuoi.Properties {
         internal static System.Drawing.Bitmap Venue_Icon {
             get {
                 object obj = ResourceManager.GetObject("Venue-Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap White_Gold_Elegant_Wedding_Organizer_Logo {
+            get {
+                object obj = ResourceManager.GetObject("White Gold Elegant Wedding Organizer Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

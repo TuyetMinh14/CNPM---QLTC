@@ -21,7 +21,17 @@ namespace QuanLyTiecCuoi
         private Booking _parentForm;
 
         public string conString;
-        public Venue(Booking parentForm = null, string conString = null)
+
+        public bool FromBookingSate = false;
+
+        private Rectangle btnAddOriginalRect;
+        private Rectangle btnEditOriginalRect;
+        private Rectangle btnDeleteOriginalRect;
+        private Rectangle searchVenuenameOriginalRect;
+        private Rectangle datagridview1OriginalRect;
+        private Rectangle panel1OriginalRect;
+        private Size originalFormSize;
+        public Venue(Booking parentForm = null, String _conString = null)
         {
             if (parentForm == null)
             {
@@ -31,9 +41,13 @@ namespace QuanLyTiecCuoi
             {
                 InitializeComponent();
                 _parentForm = parentForm;
-            }
 
-            this.conString = conString;
+
+            }
+            dataGridView1.CellDoubleClick += new DataGridViewCellEventHandler(dataGridView1_CellDoubleClick);
+
+            conString = _conString;
+
         }
 
 
@@ -57,18 +71,51 @@ namespace QuanLyTiecCuoi
         private void Venue_Load(object sender, EventArgs e)
         {
             LoadDataIntoDataGridView();
+            originalFormSize = this.Size;
+            btnAddOriginalRect = new Rectangle(btnAdd.Location, btnAdd.Size);
+            btnEditOriginalRect = new Rectangle(btnEdit.Location, btnEdit.Size);
+            btnDeleteOriginalRect = new Rectangle(btnDelete.Location, btnDelete.Size);
+            searchVenuenameOriginalRect = new Rectangle(searchVenuename.Location, searchVenuename.Size);
+            datagridview1OriginalRect = new Rectangle(dataGridView1.Location, dataGridView1.Size);
+            panel1OriginalRect = new Rectangle(panel1.Location, panel1.Size);
+        }
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.RowIndex < dataGridView1.Rows.Count &&
+       e.ColumnIndex >= 0 && e.ColumnIndex < dataGridView1.Columns.Count)
+            {
+                var venueIdValue = dataGridView1.Rows[e.RowIndex].Cells["VenueId"].Value;
+
+                if (venueIdValue != null && int.TryParse(venueIdValue.ToString(), out int venueId))
+                {
+                    if (_parentForm != null)
+                    {
+                        _parentForm.VenueForm_ConfirmEvent(venueId);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Parent form is not set.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid VenueId.");
+                }
             }
+        }
 
 
 
 
         public void LoadDataIntoDataGridView()
         {
-            string query = "SELECT ID,PICTURE, TENSANH,LOAISANH,MAXTABLE,MINMONEY,NOTE FROM SANHINFOR where TRANGTHAISANH = 1 ";
-            if (_parentForm != null)
+            string query = "SELECT ID,PICTURE, TENSANH,LOAISANH,MAXTABLE,MINMONEY,NOTE FROM SANHINFOR WHERE TRANGTHAISANH = 1";
+            if (_parentForm != null && FromBookingSate)
             {
-                 query = "SELECT ID,PICTURE, TENSANH,LOAISANH,MAXTABLE,MINMONEY,NOTE FROM SANHINFOR WHERE ID NOT IN (SELECT IDLOAISANH FROM TIEC WHERE NGAYTOCHUC = @Ngay AND CA = @Ca ) AND TRANGTHAISANH = 1 ";
-
+                query = "SELECT ID,PICTURE, TENSANH,LOAISANH,MAXTABLE,MINMONEY,NOTE FROM SANHINFOR WHERE ID NOT IN (SELECT IDLOAISANH FROM TIEC WHERE NGAYTOCHUC = @Ngay AND CA = @Ca ) AND TRANGTHAISANH = 1 ";
+                dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                this.Controls.Add(dataGridView1);
                 using (SqlConnection connection = new SqlConnection(conString))
                 {
                     using (SqlCommand command = new SqlCommand(query, connection))
@@ -86,32 +133,11 @@ namespace QuanLyTiecCuoi
                         MaxTable.DataPropertyName = "MAXTABLE";
                         MinTable.DataPropertyName = "MINMONEY";
                         Note.DataPropertyName = "NOTE";
+                        VenueState.DataPropertyName = "TRANGTHAISANH";
 
 
-
-                        bool selectColumnExists = false;
-                      
-                            foreach (DataGridViewColumn column in dataGridView1.Columns)
-                            {
-                                if (column.Name == "Select")
-                                {
-                                    selectColumnExists = true;
-                                    break;
-                                }
-                            }
-
-                            if (!selectColumnExists)
-                            {
-                                DataGridViewCheckBoxColumn selectColumn = new DataGridViewCheckBoxColumn();
-                                selectColumn.HeaderText = "Select";
-                                selectColumn.Name = "Select";
-                                selectColumn.DataPropertyName = "SELECT"; 
-                                selectColumn.ReadOnly = false;
-                                dataGridView1.Columns.Add(selectColumn);
-                                Confirm.Size = new System.Drawing.Size(180, 40);
-                            }
-                      
-                        SelectRowById();
+                       
+                        Controls.Add(dataGridView1);
                         dataGridView1.DataSource = table;
                     }
                 }
@@ -133,11 +159,7 @@ namespace QuanLyTiecCuoi
 
                     adapter.Fill(dataTable);
 
-                    // Close the connection
-                    connection.Close();
-
-
-                   
+                    connection.Close();    
                     VenueId.DataPropertyName = "ID";
                     Image.DataPropertyName = "PICTURE";
                     VenueName.DataPropertyName = "TENSANH";
@@ -145,8 +167,8 @@ namespace QuanLyTiecCuoi
                     MaxTable.DataPropertyName = "MAXTABLE";
                     MinTable.DataPropertyName = "MINMONEY";
                     Note.DataPropertyName = "NOTE";
-
-                        dataGridView1.DataSource = dataTable;
+                    VenueState.DataPropertyName = "TRANGHTHAISANH";
+                    dataGridView1.DataSource = dataTable;
                     }
                 catch (Exception ex)
                 {
@@ -161,51 +183,46 @@ namespace QuanLyTiecCuoi
             }
         }
 
-        private void SelectRowById()
-        {
-            foreach (DataGridViewRow row in dataGridView1.Rows)
-            {
-                int rowId;
-                if (int.TryParse(row.Cells["ID"].Value.ToString(), out rowId))
-                {
-                    // Kiểm tra xem ID của hàng có trùng với ID đã chọn hay không
-                    if (rowId == VenueSelectedId)
-                    {
-                        // Lấy ô checkbox từ cột "SELECT"
-                        DataGridViewCheckBoxCell checkBoxCell = row.Cells["SELECT"] as DataGridViewCheckBoxCell;
-                        if (checkBoxCell != null)
-                        {
-                            // Thiết lập giá trị của ô checkbox thành true
-                            checkBoxCell.Value = true;
-                        }
+        //private void SelectRowById()
+        //{
+        //    foreach (DataGridViewRow row in dataGridView1.Rows)
+        //    {
+        //        int rowId;
+        //        if (int.TryParse(row.Cells["ID"].Value.ToString(), out rowId))
+        //        {
+        //            if (rowId == VenueSelectedId)
+        //            {
+        //                DataGridViewCheckBoxCell checkBoxCell = row.Cells["SELECT"] as DataGridViewCheckBoxCell;
+        //                if (checkBoxCell != null)
+        //                {
+        //                    checkBoxCell.Value = true;
+        //                }
 
-                        // Thoát khỏi vòng lặp sau khi tìm thấy và thiết lập giá trị
-                        return;
-                    }
-                }
-            }
-
-         
-        }
+        //                return;
+        //            }
+        //        }
+        //    }
 
 
+        //}
+
+      
 
 
         // Method to handle the click event of the "AddVenue" button
         private void AddVenue_Click(object sender, EventArgs e)
         {
-            // Corrected variable name to insertVenueForm
             ChangingState = true;
             dataGridView1.ReadOnly = false;
-            ChangeVenue.Text = "Chỉnh sửa";
-            isEditing = false;
-
-
-
-            InsertVenue insertVenueForm = new InsertVenue(this);
+            //ChangeVenue.Text = "Chỉnh sửa";
+            InsertVenue insertVenueForm = new InsertVenue(this, conString);
             insertVenueForm.ShowDialog();
         }
-
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            InsertVenue insertVenueForm = new InsertVenue(this, conString);
+            insertVenueForm.ShowDialog();
+        }
 
 
         private void SelectedVenue(bool isChoosing)
@@ -234,13 +251,11 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-
-        private void SearchVenue_TextChanged(object sender, EventArgs e)
+        private void searchFoodname__TextChanged(object sender, EventArgs e)
         {
-            string searchText = SearchVenue.Text.Trim();
+            string searchText = searchVenuename.Texts.Trim();
 
-            string query = "SELECT * FROM SANHINFOR WHERE [ID] LIKE '%' + @searchText + '%' OR [TENSANH] LIKE '%' + @searchText + '%' OR [LOAISANH] LIKE '%' + @searchText + '%' OR [TRANGTHAISANH] LIKE '%' + @searchText + '%' OR [MINMONEY] LIKE '%' + @searchText + '%' OR [MAXTABLE] LIKE '%' + @searchText + '%'";
+            string query = "SELECT ID, PICTURE, TENSANH, LOAISANH, MAXTABLE, MINMONEY, NOTE FROM SANHINFOR WHERE [ID] LIKE '%' + @searchText + '%' OR [TENSANH] LIKE '%' + @searchText + '%' OR [LOAISANH] LIKE '%' + @searchText + '%' OR [TRANGTHAISANH] LIKE '%' + @searchText + '%' OR [MINMONEY] LIKE '%' + @searchText + '%' OR [MAXTABLE] LIKE '%' + @searchText + '%'";
 
             using (SqlConnection connection = new SqlConnection(conString))
             {
@@ -257,26 +272,24 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-
-        private void button3_Click(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
             Int32 selectedCellCount = dataGridView1.GetCellCount(DataGridViewElementStates.Selected);
-            if (    selectedCellCount > 0)
+            if (selectedCellCount > 0)
             {
                 int currentIndex = dataGridView1.CurrentCell.RowIndex;
 
                 int ID = Convert.ToInt32(dataGridView1.Rows[currentIndex].Cells["VenueId"].Value);
 
-                string storedProcedureName = "CheckAndUpdateSanhStatus"; 
+                string storedProcedureName = "CheckAndUpdateSanhStatus";
 
                 using (SqlConnection connection = new SqlConnection(conString))
                 {
                     using (SqlCommand command = new SqlCommand(storedProcedureName, connection))
                     {
-                        command.CommandType = CommandType.StoredProcedure; 
+                        command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.AddWithValue("@IDSanh", ID); 
+                        command.Parameters.AddWithValue("@IDSanh", ID);
 
                         try
                         {
@@ -301,20 +314,17 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-
-
-        private void ChangeVenue_Click(object sender, EventArgs e)
+        private void btnEdit_Click(object sender, EventArgs e)
         {
-            if (!isEditing) 
+            if (!isEditing)
             {
                 dataGridView1.ReadOnly = false;
-                ChangeVenue.Text = "Lưu chỉnh sửa";
+                dataGridView1.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                btnEdit.Text = "Lưu Chỉnh Sửa";
                 isEditing = true;
             }
             else
             {
-
                 SaveChangesToDatabase(ChangingState);
             }
         }
@@ -386,9 +396,9 @@ namespace QuanLyTiecCuoi
                     ChangingState = false;
                 }
                 LoadDataIntoDataGridView();
-
                 dataGridView1.ReadOnly = false;
-                ChangeVenue.Text = "Chỉnh sửa";
+                dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                btnEdit.Text = "Chỉnh Sửa Sảnh";
                 isEditing = false;
             }
         }
@@ -411,56 +421,85 @@ namespace QuanLyTiecCuoi
                 }
             }
 
-            if (isChoosing)
+            if (_parentForm != null)
             {
-                dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
-                int currentRowIndex = e.RowIndex;
-                if (currentRowIndex >= 0 && currentRowIndex < dataGridView1.Rows.Count)
+                if (e.RowIndex >= 0 && FromBookingSate)
                 {
-                    DataGridViewCell selectedCell = dataGridView1.Rows[currentRowIndex].Cells["SELECT"];
+                    var venueIdValue = dataGridView1.Rows[e.RowIndex].Cells["VenueId"].Value;
 
-                    if (selectedCell != null)
+                    if (venueIdValue != null && int.TryParse(venueIdValue.ToString(), out int venueId))
                     {
-                        selectedCell.Value = true;
-
-                        foreach (DataGridViewRow row in dataGridView1.Rows)
-                        {
-                            if (row.Index != currentRowIndex)
-                            {
-                                DataGridViewCell otherCell = row.Cells["SELECT"];
-                                if (otherCell != null)
-                                {
-                                    otherCell.Value = false;
-                                }
-                            }
-                        }
+                        MessageBox.Show("VenueId: " + venueId);
+                        _parentForm.VenueForm_ConfirmEvent(venueId);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Invalid VenueId.");
                     }
                 }
+
             }
 
         }
 
-
-        public delegate void ConfirmEventHandler(int VenueSelectedId);
-
-        public event ConfirmEventHandler ConfirmEvent; 
-
-        private void Confirm_Click(object sender, EventArgs e)
+        private void Venue_Resize(object sender, EventArgs e)
         {
-           
-            foreach (DataGridViewRow row in dataGridView1.Rows)
-            {
-                if (Convert.ToBoolean(row.Cells["SELECT"].Value))
-                {
-                    int.TryParse(row.Cells["VenueId"].Value.ToString(), out VenueSelectedId); 
-                }
-            }
-
-            ConfirmEvent?.Invoke(VenueSelectedId);
-
-            this.Close();
+            if (originalFormSize.Width == 0 || originalFormSize.Height == 0) return;
+            float xRatio = (float)this.Width / originalFormSize.Width;
+            float yRatio = (float)this.Height / originalFormSize.Height;
+            ResizeControl(btnAddOriginalRect, btnAdd, xRatio, yRatio);
+            ResizeControl(btnEditOriginalRect, btnEdit, xRatio, yRatio);
+            ResizeControl(btnDeleteOriginalRect, btnDelete, xRatio, yRatio);
+            ResizeControl(searchVenuenameOriginalRect, searchVenuename, xRatio, yRatio);
+            ResizeControl(datagridview1OriginalRect, dataGridView1, xRatio, yRatio);
+            ResizeControl(panel1OriginalRect, panel1, xRatio, yRatio);
         }
+
+        private void ResizeControl(Rectangle originalRect, Control control, float xRatio, float yRatio)
+        {
+            int newX = (int)(originalRect.X * xRatio);
+            int newY = (int)(originalRect.Y * yRatio);
+            int newWidth = (int)(originalRect.Width * xRatio);
+            int newHeight = (int)(originalRect.Height * yRatio);
+            newX = Math.Max(newX, 0);
+            newY = Math.Max(newY, 0);
+            newWidth = Math.Max(newWidth, 10); // Minimum width
+            newHeight = Math.Max(newHeight, 10); // Minimum height
+
+            if (newX + newWidth > this.ClientSize.Width)
+            {
+                newWidth = this.ClientSize.Width - newX;
+            }
+            if (newY + newHeight > this.ClientSize.Height)
+            {
+                newHeight = this.ClientSize.Height - newY;
+            }
+            Console.WriteLine($"Resizing {control.Name}: New Location ({newX}, {newY}), New Size ({newWidth}, {newHeight})");
+            control.Location = new Point(newX, newY);
+            control.Size = new Size(newWidth, newHeight);
+        }
+        //public delegate void ConfirmEventHandler(int VenueSelectedId);
+
+        //public event ConfirmEventHandler ConfirmEvent; 
+
+        //private void Confirm_Click(object sender, EventArgs e)
+        //{
+
+        //    foreach (DataGridViewRow row in dataGridView1.Rows)
+        //    {
+        //        if (Convert.ToBoolean(row.Cells["SELECT"].Value))
+        //        {
+        //            int.TryParse(row.Cells["VenueId"].Value.ToString(), out VenueSelectedId); 
+        //        }
+        //    }
+
+        //    ConfirmEvent?.Invoke(VenueSelectedId);
+
+        //    this.Close();
+        //}
+
     }
 }
 

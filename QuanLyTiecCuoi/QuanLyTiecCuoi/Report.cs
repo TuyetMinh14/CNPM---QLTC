@@ -24,7 +24,47 @@ namespace QuanLyTiecCuoi
         {
             InitializeComponent();
             this.conString = conSring;
+            LimitMonthYear();
+
         }
+
+        private void LimitMonthYear()
+        {
+            string query = "SELECT MAX(NGAYXUATHOADON) AS MaxDate, MIN(NGAYXUATHOADON) AS MinDate FROM HOADON";
+
+            DateTime maxDate = DateTime.MinValue;
+            DateTime minDate = DateTime.MaxValue;
+
+            using (SqlConnection connection = new SqlConnection(conString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            DateTime currentMaxDate = reader.GetDateTime(reader.GetOrdinal("MaxDate"));
+                            DateTime currentMinDate = reader.GetDateTime(reader.GetOrdinal("MinDate"));
+
+                            if (currentMaxDate > maxDate)
+                                maxDate = currentMaxDate;
+                            if (currentMinDate < minDate)
+                                minDate = currentMinDate;
+                        }
+                    }
+                }
+            }
+
+            MonthYear.Format = DateTimePickerFormat.Custom;
+            MonthYear.CustomFormat = "MM/yyyy";
+            MonthYear.MaxDate = maxDate;
+            MonthYear.MinDate = minDate;
+            MonthYear.Value = DateTime.Now;
+        }
+
+
 
         private void listView1_load(object sender, EventArgs e)
         {
@@ -38,6 +78,8 @@ namespace QuanLyTiecCuoi
             GetNearest5month();
             CalculateDailyRevenueRatio();
         }
+
+
 
 
         private void ProdPeferiod(string Thang = null, string Nam = null)
@@ -82,7 +124,6 @@ namespace QuanLyTiecCuoi
                     con.Open();
                     cmd.ExecuteNonQuery();
 
-                    // Retrieve the values from the output parameters and handle nulls
                     var total = totalParam.Value != DBNull.Value ? (decimal)totalParam.Value : 0;
                     var totalVenue = totalVenueParam.Value != DBNull.Value ? (int)totalVenueParam.Value : 0;
                     var totalParty = totalPartyParam.Value != DBNull.Value ? (int)totalPartyParam.Value : 0;
@@ -195,7 +236,6 @@ namespace QuanLyTiecCuoi
                     con.Open();
                     cmd.ExecuteNonQuery();
 
-                    // Retrieve the output values
                     
 
                     decimal?[] DTThangValues = new decimal?[5];
@@ -211,8 +251,9 @@ namespace QuanLyTiecCuoi
                         YearValues[i] = cmd.Parameters["@Year" + (i + 1)].Value == DBNull.Value ? null : (int?)cmd.Parameters["@Year" + (i + 1)].Value;
                     }
 
-                    // Bind the data to the chart
                     var chartData = new List<Tuple<string, decimal, int, int, int>>();
+                    
+
 
                     for (int i = 0; i < 5; i++)
                     {
@@ -222,8 +263,8 @@ namespace QuanLyTiecCuoi
                             chartData.Add(Tuple.Create(monthLabel, DTThangValues[i].Value, SoLuongTiecValues[i].Value, MonthValues[i].Value, YearValues[i].Value));
                         }
                     }
+                    chartData = chartData.OrderBy(data => new DateTime(data.Item5, data.Item4, 1)).ToList();
                     chart1.Series.Clear();
-                   // Create Series1 for column chart
                    var series1 = new System.Windows.Forms.DataVisualization.Charting.Series
                     {
                         Name = "Doanh Thu Mỗi Tháng",
@@ -232,7 +273,6 @@ namespace QuanLyTiecCuoi
                     };
                     chart1.Series.Add(series1);
 
-                    // Create Series2 for line chart (events)
                     var series2 = new System.Windows.Forms.DataVisualization.Charting.Series
                     {
                         Name = "Số Lượng Tiệc",
@@ -243,7 +283,6 @@ namespace QuanLyTiecCuoi
 
                     foreach (var data in chartData)
                     {
-                        // Add data to Series1 (column chart)
                         if (data.Item2 != 0)
                         {
                             var point = series1.Points.AddXY($"{data.Item1}", data.Item2);
@@ -254,7 +293,7 @@ namespace QuanLyTiecCuoi
             }
         }
 
-                        private void CalculateDailyRevenueRatio(string Thang = null, string Nam = null)
+        private void CalculateDailyRevenueRatio(string Thang = null, string Nam = null)
         {
             if (Thang == null)
             {
@@ -279,7 +318,6 @@ namespace QuanLyTiecCuoi
                     con.Open();
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    // Clear existing data in the pie chart
                     chart2.Series.Clear();
                     var series = new System.Windows.Forms.DataVisualization.Charting.Series
                     {
@@ -288,15 +326,17 @@ namespace QuanLyTiecCuoi
                         ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie
                     };
                     chart2.Series.Add(series);
+                    chart2.Legends[0].Title = "Ngày trong tháng";
+                    chart2.Titles.Add("Biểu đồ tỉ lệ doanh thu theo ngày trong tháng");
 
-                    // Add data to the pie chart
+
                     while (reader.Read())
                     {
                         int dayOfMonth = reader.GetInt32(0);
                         decimal dailyRevenue = reader.GetDecimal(1);
                         decimal revenueRatio = reader.GetDecimal(2);
 
-                        if (dailyRevenue != 0)  // Only add if daily revenue is not 0
+                        if (dailyRevenue != 0)  
                         {
                             series.Points.AddXY($"Day {dayOfMonth}", revenueRatio);
                         }
@@ -307,37 +347,31 @@ namespace QuanLyTiecCuoi
             }
         }
 
-        private void FindMonth_Click(object sender, EventArgs e)
+        private void SearchByMonth_Click(object sender, EventArgs e)
         {
-            string SearchMonthYear = GetMonthYear.Text.Trim();
-            int? Nam = null; // Sử dụng kiểu int? để cho phép giá trị null
-            int? Thang = null; // Sử dụng kiểu int? để cho phép giá trị null
+            string SearchMonthYear = MonthYear.Value.ToString();
+            string Nam = null;
+            string Thang = null;
 
             if (!string.IsNullOrEmpty(SearchMonthYear))
             {
-                if (SearchMonthYear.Length >= 1 && SearchMonthYear.Length <= 2 && int.TryParse(SearchMonthYear, out int month) && month <= 12)
-                {
-                    Thang = month;
-                }
-                else if (SearchMonthYear.Length == 4 && int.TryParse(SearchMonthYear, out int year))
-                {
-                    Nam = year;
-                }
-                else if (SearchMonthYear.Length == 6 && int.TryParse(SearchMonthYear.Substring(0, 2), out int monthPart) && int.TryParse(SearchMonthYear.Substring(2), out int yearPart))
-                {
-                    if (monthPart <= 12)
-                    {
-                        Thang = monthPart;
-                        Nam = yearPart;
-                    }
-                }
+                
+                        Thang = SearchMonthYear.Split('/')[0];
+                        Nam = SearchMonthYear.Split('/')[1];
+                Console.WriteLine(Thang);
+                Console.WriteLine(Nam);
+                CalculateDailyRevenueRatio(Thang, Nam);
+                GetNearest5month(Thang, Nam);
+                LoadGridViewReport(Thang, Nam);
+                ProdPeferiod(Thang, Nam);
+
             }
+           
+          
 
-            ProdPeferiod(Thang.HasValue ? Thang.ToString() : null, Nam.HasValue ? Nam.ToString() : null);
-            LoadGridViewReport(Thang.HasValue ? Thang.ToString() : null, Nam.HasValue ? Nam.ToString() : null);
-            GetNearest5month(Thang.HasValue ? Thang.ToString() : null, Nam.HasValue ? Nam.ToString() : null);
-            CalculateDailyRevenueRatio(Thang.HasValue ? Thang.ToString() : null, Nam.HasValue ? Nam.ToString() : null);
+            
+
+
         }
-
     }
 }

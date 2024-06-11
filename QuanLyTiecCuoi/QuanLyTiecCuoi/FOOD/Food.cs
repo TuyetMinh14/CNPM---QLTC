@@ -1,4 +1,5 @@
 ﻿using QuanLyTiecCuoi.SERVICE;
+using QuanLyTiecCuoi.UIDesign;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,14 @@ namespace QuanLyTiecCuoi
 
         private Booking _parentForm;
         public string _conString;
-
+        private Rectangle btnAddOriginalRect;
+        private Rectangle btnEditOriginalRect;
+        private Rectangle btnDeleteOriginalRect;
+        //private Rectangle btnXacNhanOriginalRect;
+        private Rectangle searchFoodnameOriginalRect;
+        private Rectangle datagridviewFoodOriginalRect;
+        private Rectangle panel2OriginalRect;
+        private Size originalFormSize;
 
         public Food(string conString, Booking parentForm = null)
         {
@@ -89,13 +97,36 @@ namespace QuanLyTiecCuoi
 
         private void Food_Load(object sender, EventArgs e)
         {
+            if (isChoosing == true)
+            {
+                btnAdd.Visible = false;
+                btnEdit.Visible = false;
+                btnDelete.Visible = false;
+                Confirm.Visible = false;
+                XacNhan.Visible = true;
+            }    
+            else
+            {
+                btnAdd.Visible = true;
+                btnEdit.Visible = true;
+                btnDelete.Visible = true;
+                Confirm.Visible = true;
+            }    
             LoadDataGridViewFood();
+            originalFormSize = this.Size;
+            btnAddOriginalRect = new Rectangle(btnAdd.Location, btnAdd.Size);
+            btnEditOriginalRect = new Rectangle(btnEdit.Location, btnEdit.Size);
+            btnDeleteOriginalRect = new Rectangle(btnDelete.Location, btnDelete.Size);
+            //btnDeleteOriginalRect = new Rectangle(XacNhan.Location, XacNhan.Size);
+            searchFoodnameOriginalRect = new Rectangle(searchFoodname.Location, searchFoodname.Size);
+            datagridviewFoodOriginalRect = new Rectangle(dataGridViewFood.Location, dataGridViewFood.Size);
+            panel2OriginalRect = new Rectangle(panel2.Location, panel2.Size);
         }
 
 
         public void LoadDataGridViewFood()
         {
-            String query = "SELECT ID,Picture,DONGIA,NOTE TENMONAN FROM FOOD where TRANGTHAIMONAN = 1";
+            String query = "SELECT ID,Picture,DONGIA,NOTE, TENMONAN FROM FOOD where TRANGTHAIMONAN = 1";
 
             using (SqlConnection connection = new SqlConnection(_conString))
             {
@@ -122,7 +153,7 @@ namespace QuanLyTiecCuoi
                         selectColumn.HeaderText = "Select";
                         selectColumn.Name = "Select";
                         selectColumn.DataPropertyName = "SELECT";
-                        selectColumn.ReadOnly = false; 
+                        selectColumn.ReadOnly = false;
                         dataGridViewFood.Columns.Add(selectColumn);
                         Confirm.Size = new System.Drawing.Size(180, 40);
                     }
@@ -146,7 +177,7 @@ namespace QuanLyTiecCuoi
                 {
                     imageColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
                 }
-
+                dataGridViewFood.RowHeadersDefaultCellStyle.Font = new Font("Verdana", 12, FontStyle.Bold);
                 dataGridViewFood.DataSource = dataTable;
                 if (_parentForm != null)
                 {
@@ -155,13 +186,15 @@ namespace QuanLyTiecCuoi
             }
         }
 
-
-
-        private void SearchFood_TextChanged(object sender, EventArgs e)
+        private void searchFoodname__TextChanged(object sender, EventArgs e)
         {
-            string searchText = SearchFood.Text.Trim();
+            string searchText = searchFoodname.Texts.Trim();
 
-            string query = "SELECT * FROM FOOD WHERE [ID] LIKE '%' + @searchText + '%' OR [TENMONAN] LIKE '%' + @searchText + '%' OR [DONGIA] LIKE '%' + @searchText + '%' OR [NOTE] LIKE '%' + @searchText";
+            string query = "SELECT * FROM FOOD WHERE [ID] LIKE '%' + @searchText + '%' OR [TENMONAN] " +
+                "LIKE '%' + @searchText + '%' OR [DONGIA] LIKE '%' + @searchText + '%' " +
+                "OR [NOTE] LIKE '%' + @searchText";
+
+
 
             using (SqlConnection connection = new SqlConnection(_conString))
             {
@@ -177,7 +210,6 @@ namespace QuanLyTiecCuoi
                 }
             }
         }
-
 
         private void SaveChangesToDatabase()
         {
@@ -243,28 +275,27 @@ namespace QuanLyTiecCuoi
             LoadDataGridViewFood();
 
             dataGridView1.ReadOnly = false;
-            ChangeVenue.Text = "Chỉnh sửa";
+            btnEdit.Text = "Chỉnh Sửa";
+            dataGridViewFood.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             isEditing = false;
         }
 
-
-       
-        private void button2_Click(object sender, EventArgs e)
+        private void btnEdit_Click(object sender, EventArgs e)
         {
             if (!isEditing)
             {
                 dataGridViewFood.ReadOnly = false;
-                ChangeFood.Text = "Lưu chỉnh sửa";
+                dataGridViewFood.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                btnEdit.Text = "Lưu Chỉnh Sửa";
                 isEditing = true;
             }
             else
             {
-
                 SaveChangesToDatabase();
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnDelete_Click(object sender, EventArgs e)
         {
             Int32 selectedCellCount = dataGridViewFood.GetCellCount(DataGridViewElementStates.Selected);
             if (selectedCellCount > 0)
@@ -308,7 +339,7 @@ namespace QuanLyTiecCuoi
 
         public string imglocation = "";
 
-
+        
         private void dataGridViewFood_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (isEditing && dataGridViewFood.Columns[e.ColumnIndex].Name == "PictureFood" && e.RowIndex != -1)
@@ -325,7 +356,7 @@ namespace QuanLyTiecCuoi
             }
                 
             if(isChoosing)
-            { 
+            {
                 dataGridViewFood.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 int currentRowIndex = e.RowIndex;
                 if (currentRowIndex >= 0 && currentRowIndex < dataGridViewFood.Rows.Count)
@@ -352,12 +383,12 @@ namespace QuanLyTiecCuoi
             }
         }
 
-        private void AddFood_Click(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
-            // Corrected variable name to insertVenueForm
             InsertFood insertFoodForm = new InsertFood(this, _conString);
             insertFoodForm.ShowDialog();
         }
+
 
         public delegate void ConfirmEventHandler(List<string> selectedFoods);
 
@@ -385,6 +416,64 @@ namespace QuanLyTiecCuoi
 
             // Close the Food form
             this.Close();
+        }
+
+        private void XacNhan_Click(object sender, EventArgs e)
+        {
+            SelectedFoods = new List<string>();
+            // Iterate through the DataGridView to collect selected food IDs
+            foreach (DataGridViewRow row in dataGridViewFood.Rows)
+            {
+                if (Convert.ToBoolean(row.Cells["SELECT"].Value))
+                {
+                    string foodID = row.Cells["FoodId"].Value.ToString(); // Assuming the ID column name is "ID"
+                    SelectedFoods.Add(foodID);
+                }
+            }
+
+            // Raise the event and pass the list
+            ConfirmEvent?.Invoke(SelectedFoods);
+
+            // Close the Food form
+            this.Close();
+        }
+
+        private void Food_Resize(object sender, EventArgs e)
+        {
+            if (originalFormSize.Width == 0 || originalFormSize.Height == 0) return;
+            float xRatio = (float)this.Width / originalFormSize.Width;
+            float yRatio = (float)this.Height / originalFormSize.Height;
+            ResizeControl(btnAddOriginalRect, btnAdd, xRatio, yRatio);
+            ResizeControl(btnEditOriginalRect, btnEdit, xRatio, yRatio);
+            ResizeControl(btnDeleteOriginalRect, btnDelete, xRatio, yRatio);
+            //ResizeControl(btnXacNhanOriginalRect, XacNhan, xRatio, yRatio);
+            ResizeControl(searchFoodnameOriginalRect, searchFoodname, xRatio, yRatio);
+            ResizeControl(datagridviewFoodOriginalRect, dataGridViewFood, xRatio, yRatio);
+            ResizeControl(panel2OriginalRect, panel2, xRatio, yRatio);
+        }
+
+        private void ResizeControl(Rectangle originalRect, Control control, float xRatio, float yRatio)
+        {
+            int newX = (int)(originalRect.X * xRatio);
+            int newY = (int)(originalRect.Y * yRatio);
+            int newWidth = (int)(originalRect.Width * xRatio);
+            int newHeight = (int)(originalRect.Height * yRatio);
+            newX = Math.Max(newX, 0);
+            newY = Math.Max(newY, 0);
+            newWidth = Math.Max(newWidth, 10); // Minimum width
+            newHeight = Math.Max(newHeight, 10); // Minimum height
+
+            if (newX + newWidth > this.ClientSize.Width)
+            {
+                newWidth = this.ClientSize.Width - newX;
+            }
+            if (newY + newHeight > this.ClientSize.Height)
+            {
+                newHeight = this.ClientSize.Height - newY;
+            }
+            Console.WriteLine($"Resizing {control.Name}: New Location ({newX}, {newY}), New Size ({newWidth}, {newHeight})");
+            control.Location = new Point(newX, newY);
+            control.Size = new Size(newWidth, newHeight);
         }
     }
 }

@@ -49,6 +49,9 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
+    <Reference Include="FontAwesome.Sharp, Version=6.3.0.0, Culture=neutral, PublicKeyToken=d16d1e4e568ec10f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FontAwesome.Sharp.6.3.0\lib\net472\FontAwesome.Sharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -82,6 +85,8 @@
     <Reference Include="Npgsql, Version=8.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.8.0.3\lib\netstandard2.0\Npgsql.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="Supabase, Version=0.16.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\supabase-csharp.0.16.2\lib\netstandard2.0\Supabase.dll</HintPath>
     </Reference>
@@ -158,6 +163,7 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -167,10 +173,12 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="Websocket.Client, Version=4.6.1.0, Culture=neutral, PublicKeyToken=ae648c6d12f59b1b, processorArchitecture=MSIL">
       <HintPath>..\packages\Websocket.Client.4.6.1\lib\netstandard2.0\Websocket.Client.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Booking.cs">
@@ -196,6 +204,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Compile>
+    <Compile Include="DESIGN\NVMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DESIGN\NVMainForm.Designer.cs">
+      <DependentUpon>NVMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DESIGN\AdminMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DESIGN\AdminMainForm.Designer.cs">
+      <DependentUpon>AdminMainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DESIGN\ThemeColor.cs" />
+    <Compile Include="DESIGN\Widget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DESIGN\Widget.Designer.cs">
+      <DependentUpon>Widget.cs</DependentUpon>
+    </Compile>
     <Compile Include="FOOD\Food.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -207,6 +234,43 @@
     </Compile>
     <Compile Include="FOOD\InsertFood.Designer.cs">
       <DependentUpon>InsertFood.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\FormMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login\FormMessageBox.Designer.cs">
+      <DependentUpon>FormMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\Register.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login\Register.Designer.cs">
+      <DependentUpon>Register.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Login\RJMessageBox.cs" />
+    <Compile Include="NhanVien.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NhanVien.Designer.cs">
+      <DependentUpon>NhanVien.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NHANVIEN\InsertNV.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NHANVIEN\InsertNV.Designer.cs">
+      <DependentUpon>InsertNV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TraCuu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TraCuu.Designer.cs">
+      <DependentUpon>TraCuu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TrangThaiSanh.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TrangThaiSanh.Designer.cs">
+      <DependentUpon>TrangThaiSanh.cs</DependentUpon>
     </Compile>
     <Compile Include="QUANLYTIECCUOIDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -224,11 +288,38 @@
     <Compile Include="Service\InsertService.Designer.cs">
       <DependentUpon>InsertService.cs</DependentUpon>
     </Compile>
-    <Compile Include="Service\Service.cs">
+    <Compile Include="Service\myService.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Service\Service.Designer.cs">
-      <DependentUpon>Service.cs</DependentUpon>
+    <Compile Include="Service\myService.Designer.cs">
+      <DependentUpon>myService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DESIGN\ToggleButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UIDesign\ButtonUI.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UIDesign\ComboBoxUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UIDesign\ComboBoxUI.Designer.cs">
+      <DependentUpon>ComboBoxUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UIDesign\DatePickerUI.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UIDesign\TextBoxTemplate.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UIDesign\TextBoxTemplate.Designer.cs">
+      <DependentUpon>TextBoxTemplate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UIDesign\TextBoxUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UIDesign\TextBoxUI.Designer.cs">
+      <DependentUpon>TextBoxUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Venue\InsertVenue.cs">
       <SubType>Form</SubType>
@@ -248,16 +339,10 @@
     <Compile Include="Recepit\Receipt.Designer.cs">
       <DependentUpon>Receipt.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainApp.cs">
+    <Compile Include="Login\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainApp.Designer.cs">
-      <DependentUpon>MainApp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Login.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Login.Designer.cs">
+    <Compile Include="Login\Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
     <Compile Include="MainClass.cs" />
@@ -275,11 +360,38 @@
     <EmbeddedResource Include="ChartReport.resx">
       <DependentUpon>ChartReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="DESIGN\NVMainForm.resx">
+      <DependentUpon>NVMainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DESIGN\AdminMainForm.resx">
+      <DependentUpon>AdminMainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DESIGN\Widget.resx">
+      <DependentUpon>Widget.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FOOD\Food.resx">
       <DependentUpon>Food.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FOOD\InsertFood.resx">
       <DependentUpon>InsertFood.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\FormMessageBox.resx">
+      <DependentUpon>FormMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Login\Register.resx">
+      <DependentUpon>Register.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NhanVien.resx">
+      <DependentUpon>NhanVien.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NHANVIEN\InsertNV.resx">
+      <DependentUpon>InsertNV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TraCuu.resx">
+      <DependentUpon>TraCuu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TrangThaiSanh.resx">
+      <DependentUpon>TrangThaiSanh.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Report.resx">
       <DependentUpon>Report.cs</DependentUpon>
@@ -287,11 +399,8 @@
     <EmbeddedResource Include="Recepit\Receipt.resx">
       <DependentUpon>Receipt.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Login.resx">
+    <EmbeddedResource Include="Login\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MainApp.resx">
-      <DependentUpon>MainApp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -306,8 +415,14 @@
     <EmbeddedResource Include="Service\InsertService.resx">
       <DependentUpon>InsertService.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Service\Service.resx">
-      <DependentUpon>Service.cs</DependentUpon>
+    <EmbeddedResource Include="Service\myService.resx">
+      <DependentUpon>myService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIDesign\TextBoxTemplate.resx">
+      <DependentUpon>TextBoxTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UIDesign\TextBoxUI.resx">
+      <DependentUpon>TextBoxUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Venue\InsertVenue.resx">
       <DependentUpon>InsertVenue.cs</DependentUpon>
@@ -337,6 +452,11 @@
     <None Include="DataSet1.xss">
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </None>
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\Venue.datasource" />
     <None Include="Properties\Settings.settings">
@@ -353,11 +473,29 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\White Gold Elegant Wedding Organizer Logo.png" />
     <None Include="Resources\Service-icon.png" />
     <None Include="Resources\Revenue-icon.png" />
     <None Include="Resources\Food-icon.png" />
     <None Include="Resources\Party.png" />
     <None Include="Resources\profit-icon.png" />
+    <None Include="Resources\703213.png" />
+    <None Include="Resources\34294-200.png" />
+    <None Include="Resources\png-transparent-computer-icons-user-login-desktop-others-blue-computer-prints.png" />
+    <None Include="Resources\5087607.png" />
+    <None Include="Resources\74ab48240e34df5e05a398e997a42b0e.png" />
+    <None Include="Resources\5582931.png" />
+    <None Include="Resources\chat.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\calendar-pen.png" />
+    <None Include="Resources\calendar-pen %282%29.png" />
+    <None Include="Resources\calendar-pen1.png" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="Resources\calendarDark.png" />
+    <Content Include="Resources\calendarWhite.png" />
+    <None Include="Resources\fa6-regular--pen-to-square.png" />
     <Content Include="Resources\sanh1.jpg" />
     <None Include="Resources\Venue-Icon.png" />
     <None Include="QUANLYTIECCUOIDataSet.xsc">
@@ -400,8 +538,6 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="class\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
